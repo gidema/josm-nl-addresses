@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -19,6 +20,7 @@ import org.openstreetmap.josm.data.validation.Test;
 import org.openstreetmap.josm.data.validation.TestError;
 import org.openstreetmap.josm.data.validation.TestError.Builder;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.plugins.nl_addresses.Address;
 import org.openstreetmap.josm.plugins.nl_addresses.AddressNode;
 import org.openstreetmap.josm.plugins.nl_addresses.PcHnrKey;
 import org.openstreetmap.josm.plugins.nl_addresses.StreetHnrKey;
@@ -61,10 +63,35 @@ public class DuplicateAddress extends Test {
         }
         for (Entry<StreetHnrKey, Set<AddressNode>> entry :
             data.getDuplicateStreetHnrNodes().entrySet()) {
-            errors.addAll(buildTestErrorsStreetHnr(this, entry));
+            if (!falsePositive(entry.getValue())) {
+                errors.addAll(buildTestErrorsStreetHnr(this, entry));
+            }
         }
         super.endTest();
         data.clear();
+    }
+
+    private static boolean falsePositive(Set<AddressNode> addressNodes) {
+        return falsePositive(addressNodes.toArray(new AddressNode[addressNodes.size()]));
+    }
+
+    private static boolean falsePositive(AddressNode[] nodes) {
+        if (nodes.length == 2) {
+            return falsePositive(nodes[0], nodes[1]);
+        }
+        return false;
+    }
+
+    private static boolean falsePositive(AddressNode an1, AddressNode an2) {
+        Address a1 = an1.getAddress();
+        Address a2 = an2.getAddress();
+        if (a1.getPostCode() != null && !Objects.equals(a1.getPostCode(), a2.getPostCode())) {
+            return true;
+        }
+        if (a1.getCity() != null && !Objects.equals(a1.getCity(), a2.getCity())) {
+            return true;
+        }
+        return false;
     }
 
     private static Collection<? extends TestError> buildTestErrorsPcHnr(
