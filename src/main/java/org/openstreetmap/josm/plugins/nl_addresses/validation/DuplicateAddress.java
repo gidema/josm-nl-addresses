@@ -49,10 +49,8 @@ public class DuplicateAddress extends Test {
 
     @Override
     public void visit(Node n) {
-        if (isTaggedAsAddress(n)) {
-            AddressNode addressNode = new AddressNode(n);
-            data.add(addressNode);
-        }
+        AddressNode addressNode = new AddressNode(n);
+        data.add(addressNode);
     }
 
     @Override
@@ -152,7 +150,8 @@ public class DuplicateAddress extends Test {
         }
     }
 
-    public static boolean isTaggedAsAddress(OsmPrimitive osm) {
-        return osm.hasKey("addr:housenumber");
+    @Override
+    public boolean isPrimitiveUsable(OsmPrimitive p) {
+        return super.isPrimitiveUsable(p) && p.hasKey("addr:housenumber");
     }
 }
