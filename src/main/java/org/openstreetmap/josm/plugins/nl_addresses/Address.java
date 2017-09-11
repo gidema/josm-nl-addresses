@@ -9,14 +9,18 @@ public class Address {
     private final Integer houseNumber;
     private final String streetName;
     private final String postCode;
+    private final boolean normalizedPostcode;
     private final String city;
 
     public Address(Node n) {
         this.fullHouseNumber = n.get("addr:housenumber");
         this.houseNumber = parseNumber(fullHouseNumber);
-        this.streetName = n.get("addr:street");
-        this.postCode = normalizePostcode(n.get("addr:postcode"));
-        this.city = n.get("addr:city");
+        this.streetName = n.get("addr:street").intern();
+        String pc = n.get("addr:postcode").intern();
+        this.postCode = normalizePostcode(pc);
+        this.normalizedPostcode =
+                postCode != null && postCode.equals(pc);
+        this.city = n.get("addr:city").intern();
     }
 
     public String getFullHouseNumber() {
@@ -35,13 +39,18 @@ public class Address {
         return postCode;
     }
 
+    public boolean isNormalizedPostcode() {
+        return normalizedPostcode;
+    }
+
     public String getCity() {
         return city;
     }
 
     public static String normalizePostcode(String pc) {
-        return pc == null ? null : pc.replace(" ", "");
+        return pc == null ? null : pc.toUpperCase().replace(" ", "");
     }
+
     private static Integer parseNumber(String full) {
         if (full == null) return null;
         int i = 0;
