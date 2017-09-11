@@ -7,10 +7,10 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ValidationData {
-    private final Map<PcHnrKey, AddressNode> pcHnrIndex = new HashMap<>();
-    private final Map<PcHnrKey, Set<AddressNode>> duplicatesByPcHnr = new HashMap<>();
-    private final Map<StreetHnrKey, AddressNode> streetHnrIndex = new HashMap<>();
-    private final Map<StreetHnrKey, Set<AddressNode>> duplicatesByStreetHnr = new HashMap<>();
+    private final Map<PcHnrKey, Addressable> pcHnrIndex = new HashMap<>();
+    private final Map<PcHnrKey, Set<Addressable>> duplicatesByPcHnr = new HashMap<>();
+    private final Map<StreetHnrKey, Addressable> streetHnrIndex = new HashMap<>();
+    private final Map<StreetHnrKey, Set<Addressable>> duplicatesByStreetHnr = new HashMap<>();
 
     public void clear() {
         pcHnrIndex.clear();
@@ -19,40 +19,40 @@ public class ValidationData {
         duplicatesByStreetHnr.clear();
     }
 
-    public void add(AddressNode addressNode) {
-        PcHnrKey pcHnrKey = new PcHnrKey(addressNode);
-        if (addressNode.getAddress().getPostCode() != null) {
-            AddressNode existing = pcHnrIndex.put(pcHnrKey, addressNode);
-            if (existing != null && existing != addressNode) {
-                Set<AddressNode> duplicates = duplicatesByPcHnr.get(pcHnrKey);
+    public void add(Addressable addressable) {
+        PcHnrKey pcHnrKey = new PcHnrKey(addressable);
+        if (addressable.getAddress().getPostCode() != null) {
+            Addressable existing = pcHnrIndex.put(pcHnrKey, addressable);
+            if (existing != null && existing != addressable) {
+                Set<Addressable> duplicates = duplicatesByPcHnr.get(pcHnrKey);
                 if (duplicates == null) {
                     duplicates = new HashSet<>();
                     duplicates.add(existing);
                     duplicatesByPcHnr.put(pcHnrKey, duplicates);
                 }
-                duplicates.add(addressNode);
+                duplicates.add(addressable);
             }
         }
-        StreetHnrKey streetHnrKey = new StreetHnrKey(addressNode);
-        AddressNode existing = streetHnrIndex.put(streetHnrKey, addressNode);
-        if (existing != null && existing != addressNode &&
+        StreetHnrKey streetHnrKey = new StreetHnrKey(addressable);
+        Addressable existing = streetHnrIndex.put(streetHnrKey, addressable);
+        if (existing != null && existing != addressable &&
                 !Objects.equals(existing.getAddress().getPostCode(), pcHnrKey.getPostcode())) {
-            Set<AddressNode> duplicates = duplicatesByStreetHnr.get(streetHnrKey);
+            Set<Addressable> duplicates = duplicatesByStreetHnr.get(streetHnrKey);
             if (duplicates == null) {
                 duplicates = new HashSet<>();
                 duplicates.add(existing);
                 duplicatesByStreetHnr.put(streetHnrKey, duplicates);
             }
-            duplicates.add(addressNode);
+            duplicates.add(addressable);
         }
 
     }
 
-    public Map<PcHnrKey, Set<AddressNode>> getDuplicatePcHnrNodes() {
+    public Map<PcHnrKey, Set<Addressable>> getDuplicatePcHnrNodes() {
         return duplicatesByPcHnr;
     }
 
-    public Map<StreetHnrKey, Set<AddressNode>> getDuplicateStreetHnrNodes() {
+    public Map<StreetHnrKey, Set<Addressable>> getDuplicateStreetHnrNodes() {
         return duplicatesByStreetHnr;
     }
 }

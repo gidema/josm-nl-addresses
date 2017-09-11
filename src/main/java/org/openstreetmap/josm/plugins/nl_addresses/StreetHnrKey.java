@@ -12,8 +12,8 @@ public class StreetHnrKey {
         this.fullHouseNumber = fullHouseNumber;
     }
 
-    public StreetHnrKey(AddressNode addressNode) {
-        this(addressNode.getAddress());
+    public StreetHnrKey(Addressable addressable) {
+        this(addressable.getAddress());
     }
 
     public StreetHnrKey(Address address) {

@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.nl_addresses;
 
 import java.util.Objects;
 
-import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 
 public class Address {
     private final String fullHouseNumber;
@@ -12,15 +12,15 @@ public class Address {
     private final boolean normalizedPostcode;
     private final String city;
 
-    public Address(Node n) {
-        this.fullHouseNumber = n.get("addr:housenumber");
+    public Address(OsmPrimitive osm) {
+        this.fullHouseNumber = osm.get("addr:housenumber");
         this.houseNumber = parseNumber(fullHouseNumber);
-        this.streetName = n.get("addr:street").intern();
-        String pc = n.get("addr:postcode").intern();
+        this.streetName = osm.get("addr:street").intern();
+        String pc = osm.get("addr:postcode").intern();
         this.postCode = normalizePostcode(pc);
         this.normalizedPostcode =
                 postCode != null && postCode.equals(pc);
-        this.city = n.get("addr:city").intern();
+        this.city = osm.get("addr:city").intern();
     }
 
     public String getFullHouseNumber() {

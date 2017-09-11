@@ -6,8 +6,8 @@ public class PcHnrKey {
     private final String postcode;
     private final String fullHouseNumber;
 
-    public PcHnrKey(AddressNode addressNode) {
-        this(addressNode.getAddress());
+    public PcHnrKey(Addressable addressable) {
+        this(addressable.getAddress());
     }
 
     public PcHnrKey(Address address) {
